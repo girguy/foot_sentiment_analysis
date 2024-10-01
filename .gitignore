@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -20,15 +21,12 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
 # PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
 
@@ -83,45 +81,30 @@ profile_default/
 ipython_config.py
 
 # pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+.python-version
 
 # pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+Pipfile.lock
 
 # poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+poetry.lock
 
 # pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/latest/usage/project/#working-with-version-control
 .pdm.toml
 .pdm-python
 .pdm-build/
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+# PEP 582 (Python local packages)
 __pypackages__/
 
-# Celery stuff
+# Celery
 celerybeat-schedule
 celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Virtual environments
 .env
 .venv
 env/
@@ -155,8 +138,61 @@ dmypy.json
 cython_debug/
 
 # PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+.idea/
+
+# Ruff
+.ruff_cache/
+
+# Jupyter and Pytest cache
+.pytest_cache
+.ipynb_checkpoints
+
+# Other editor or IDE-specific files
+.vim
+.codemod.bookmark
+.telemetry
+
+# Telemetry instance ID
+.telemetry
+
+# Gatsby and Next.js
+docs/gatsby/**/node_modules/
+docs/gatsby/**/_build
+docs/gatsby/**/public
+docs/next/.mdx-data
+docs/next/public/sitemap.xml
+
+# Data files
+data
+!examples/*/data
+!examples/**/**/data
+
+# Dask
+dask-worker-space
+
+# Examples outputs
+examples/docs_snippets/docs_snippets/**/**/output/
+examples/docs_snippets/docs_snippets/**/**/output/
+examples/**/**/example.db
+
+# DuckDB database files
+*.duckdb
+
+# PyRight config
+pyrightconfig*
+
+# Scripts working directory
+scripts/.build
+
+# dbt .user files
+.user.yml
+
+# Miscellaneous
+.DS_Store
+tags
+
+# temporary folder of Dagster
+tmp.*
+foot_sa_etl/tmp431cfd4f/history/runs.db
+foot_sa_etl/tmp431cfd4f/history/runs/index.db
+foot_sa_etl/tmp431cfd4f/schedules/schedules.db
