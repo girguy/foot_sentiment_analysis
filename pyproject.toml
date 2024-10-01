@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "foot_sentiment_analysis"
+version = "0.1.0"
+description = ""
+authors = ["GGuy <guy.girineza@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+requests = "^2.32.3"
+polars = "^1.8.2"
+taipy = "^3.1.1"
+beautifulsoup4 = "^4.12.3"
+azure-storage-blob = "^12.23.1"
+dagster = "^1.8.9"
+dagster-webserver = "^1.8.9"
+matplotlib = "^3.9.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+package-mode = false
