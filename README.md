@@ -1,7 +1,7 @@
 # Soccer Fan Sentiment Analysis Dashboard
 
 ## Project Overview
-The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the sentiments of soccer fans across major European leagues, including the **English Premier League**, **La Liga**, **Serie A**, **Bundesliga**, **Ligue 1**, **Belgian Pro League**, and **Swiss Super League**. The project extracts data from various social media platforms and sports news websites, applies sentiment analysis, and visualizes the results in an interactive dashboard.
+The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the sentiments of soccer fans the English Premier League teams. The project extracts data from various social media platforms and sports news websites, applies sentiment analysis, and visualizes the results in an interactive dashboard.
 
 ## Objectives
 - **Data Extraction**: Scrape and collect fan opinions and reactions from:
@@ -39,3 +39,5 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 ├── pyproject.toml          # Poetry dependency file
 ├── poetry.lock             # Locked dependencies
 └── README.md               # Project documentation
+
+PS : This is not the right project structure. I need a tool extracting the right one
