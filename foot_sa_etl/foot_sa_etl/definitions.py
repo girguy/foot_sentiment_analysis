@@ -29,6 +29,7 @@ daily_refresh_schedule = ScheduleDefinition(
 all_assets = with_source_code_references(
     [
         *load_assets_from_package_module(example_assets),
+        *load_assets_from_package_module(bronze_assets)
     ]
 )
 
