@@ -11,7 +11,13 @@ from dotenv import load_dotenv
 import polars as pl
 
 # Dagster imports
-from dagster import AssetExecutionContext, MaterializeResult, asset, Definitions
+from dagster import (
+    AssetExecutionContext,
+    MaterializeResult,
+    asset,
+    Definitions,
+    load_assets_from_package_module
+)
 
 # Add project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
@@ -25,6 +31,10 @@ from utils.azure_blob_utils import (
     merge_dataframes_on_id
 )
 from utils.common_helpers import generate_hash
+
+# load assets bronze_scrappe_epl_news
+# in order to be used as dependency
+from assets.bronze_assets.scrappe_epl_news import bronze_scrappe_epl_news
 
 
 load_dotenv()
@@ -135,7 +145,11 @@ def process_html_column(df: pl.DataFrame) -> pl.DataFrame:
     return df.select(columns_to_keep)
 
 
-@asset(group_name="epl_sentiment_analysis", compute_kind="polars")
+@asset(
+        deps=[bronze_scrappe_epl_news],
+        group_name="epl_sentiment_analysis",
+        compute_kind="polars"
+)
 def silver_process_raw_epl_news(context: AssetExecutionContext) -> MaterializeResult:
     """
     This function processes scraped EPL news data stored in Azure Blob Storage. 
