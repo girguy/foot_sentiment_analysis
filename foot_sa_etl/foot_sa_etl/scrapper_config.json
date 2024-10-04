@@ -1,8 +1,11 @@
 {
     "base_url" : "https://www.bbc.com/sport/football/teams",
     "nb_page" : 2,
-    "container_name" : "bronze",
+    "bronze_container_name" : "bronze",
+    "silver_container_name" : "silver",
+    "gold_container_name" : "gold",
     "folder_name" : "epl_news",
+    "silver_blob_name" : "processed_data",
     "teams" :
         {
             "AFC Bournemouth": "afc-bournemouth",

@@ -1,5 +1,5 @@
 import re
-from typing import Union
+from typing import Union, List
 from io import BytesIO
 from azure.storage.blob import BlobServiceClient
 import polars as pl
@@ -53,6 +53,71 @@ def read_blob_from_container(container_name: str, path_to_blob: str, blob_servic
     except Exception as e:
         print(f"Error reading blob from {container_name}/{path_to_blob}: {e}")
         return None
+
+
+def read_all_parquets_from_container(container_name: str, folder_name: str, blob_service_client: BlobServiceClient) -> Union[List[pl.DataFrame], None]:
+    """
+    Reads all Parquet files from an Azure Blob Storage container and returns them as a list of Polars DataFrames.
+
+    :param container_name: Name of the Azure Blob Storage container
+    :param blob_service_client: BlobServiceClient object for Azure Blob Storage
+    :return: List of Polars DataFrames, or None if the operation fails
+    """
+    container_client = blob_service_client.get_container_client(container_name)
+    dataframes = []
+    
+    try:
+        # List all blobs in the container
+        blob_list = container_client.list_blobs()
+        
+        # Iterate over the blobs and read Parquet files
+        for blob in blob_list:
+            if blob.name.endswith('.parquet') and blob.name.startswith(folder_name):  # Process only parquet files
+                blob_client = container_client.get_blob_client(blob.name)
+                download_stream = blob_client.download_blob()
+                blob_data = download_stream.readall()
+                
+                # Read the blob data into a Polars DataFrame
+                df = pl.read_parquet(BytesIO(blob_data))
+                dataframes.append(df)
+                print(f"Successfully read parquet file from {container_name}/{blob.name}")
+        
+        if dataframes:
+            return pl.concat(dataframes, rechunk=True)
+        else:
+            return None
+    
+    except Exception as e:
+        print(f"Error reading Parquet files from container {container_name}: {e}")
+        return None
+
+
+def merge_dataframes_on_id(df1: pl.DataFrame, df2: pl.DataFrame, col_id: pl.String) -> pl.DataFrame:
+    """
+    Merges two Polars DataFrames based on the col_id column.
+    If an col_id from df1 exists in df2, it will not be added.
+
+    :param df1: First Polars DataFrame
+    :param df2: Second Polars DataFrame
+    :return: Merged Polars DataFrame with no duplicate col_id records from df1
+    """
+    try:
+        # Perform an anti-join to find records in df1 that do not have a match in df2 based on col_id
+        df_filtered = df1.join(df2, on=col_id, how="anti")
+
+        # Log the result of the anti-join operation
+        if df_filtered.is_empty():
+            print("No new records to merge.")
+        else:
+            print(f"{df_filtered.shape[0]} new records found. Merging them.")
+
+        # Concatenate the filtered rows from df1 with df2
+        df_merged = pl.concat([df2, df_filtered], how="vertical")
+        return df_merged
+
+    except Exception as e:
+        print(f"Error occurred while merging dataframes: {e}")
+        raise
 
 
 def from_polars_to_parquet(df: pl.DataFrame) -> BytesIO:

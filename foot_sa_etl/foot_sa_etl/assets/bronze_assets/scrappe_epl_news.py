@@ -1,51 +1,35 @@
-import asyncio
-import aiohttp
+# Standard library imports
 import os
 import sys
 import json
+import asyncio
 from typing import List, Tuple, Union, Optional
+
+# Third-party imports
+import aiohttp
 import polars as pl
 from dotenv import load_dotenv
-from dagster import AssetExecutionContext, MaterializeResult, MetadataValue, asset
 
+# Dagster imports
+from dagster import AssetExecutionContext, MaterializeResult, asset
+
+# Add project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from utils.azure_blob_utils import create_blob_client_with_connection_string, write_blob_to_container, read_blob_from_container
-from utils.common_helpers import get_current_datetime, generate_hash
+# Local project utility imports
+from utils.azure_blob_utils import (
+    create_blob_client_with_connection_string,
+    write_blob_to_container,
+    read_blob_from_container,
+    merge_dataframes_on_id
+)
+from utils.common_helpers import get_current_datetime, generate_hash, create_blob_name
+
 
 load_dotenv()
 
-# Get the absolute path of the current script
-current_dir = os.path.dirname(os.path.abspath(__file__))
-scrapper_config_path = os.path.join(current_dir, 'scrapper_config.json')
-
-
-def merge_dataframes_on_hashedId(df1: pl.DataFrame, df2: pl.DataFrame) -> pl.DataFrame:
-    """
-    Merges two Polars DataFrames based on the "_hashedId" column.
-    If an "_hashedId" from df1 exists in df2, it will not be added.
-
-    :param df1: First Polars DataFrame
-    :param df2: Second Polars DataFrame
-    :return: Merged Polars DataFrame with no duplicate "_hashedId" records from df1
-    """
-    try:
-        # Perform an anti-join to find records in df1 that do not have a match in df2 based on "_hashedId"
-        df_filtered = df1.join(df2, on="_hashedId", how="anti")
-
-        # Log the result of the anti-join operation
-        if df_filtered.is_empty():
-            print("No new records to merge.")
-        else:
-            print(f"{df_filtered.shape[0]} new records found. Merging them.")
-
-        # Concatenate the filtered rows from df1 with df2
-        df_merged = pl.concat([df2, df_filtered], how="vertical")
-        return df_merged
-
-    except Exception as e:
-        print(f"Error occurred while merging dataframes: {e}")
-        raise
+# Get path of the config file
+scrapper_config_path = os.path.join(sys.path[-1], 'scrapper_config.json')
 
 
 def get_teams_url(epl_teams, number_of_pages, base_url: str) -> List[List[Union[str, int, str]]]:
@@ -67,23 +51,6 @@ def get_teams_url(epl_teams, number_of_pages, base_url: str) -> List[List[Union[
             team_urls.append([team_name, page_number, url])
 
     return team_urls
-
-
-def create_blob_name(timestamp: str) -> str:
-    """
-    Creates a blob name in the format 'epl_news_YYYY_MM_DD' based on the given timestamp string.
-
-    :param timestamp: A string representing the date and time (e.g., '2024-10-03 10:46:15')
-    :return: A formatted string in the format 'epl_news_YYYY_MM_DD'
-    """
-    # Extract the date part from the timestamp
-    date_part = timestamp.split(' ')[0]
-
-    # Replace the hyphens with underscores
-    formatted_date = date_part.replace('-', '_')
-
-    # Return the final formatted blob name
-    return f"epl_news_{formatted_date}"
 
 
 def create_dataframe(input_df: List[List[Union[str, int, str]]], datetime_now: str) -> pl.DataFrame:
@@ -190,8 +157,8 @@ async def scrapper(urls: List[Tuple[str, int, str]]) -> List[List[str]]:
     return data
 
 
-@asset(group_name="epl_sentiment_analysis", compute_kind="BBC Sport")
-def bronze_scrappe_epl_news(context: AssetExecutionContext) -> None:
+@asset(group_name="epl_sentiment_analysis", compute_kind="polars")
+def bronze_scrappe_epl_news(context: AssetExecutionContext) -> MaterializeResult:
     """
     This function scrapes EPL team news from BBC Sport and stores the data in Azure Blob Storage
     as a Parquet file. If existing data is found in the blob, it merges the new data with the old data.
@@ -232,30 +199,31 @@ def bronze_scrappe_epl_news(context: AssetExecutionContext) -> None:
     blob_service_client = create_blob_client_with_connection_string(connection_string)
 
     # Define the container and path for the blob storage
-    container_name = scrapper_config['container_name']
+    bronze_container_name = scrapper_config['bronze_container_name']
     folder_name = scrapper_config['folder_name']
     blob_name = create_blob_name(datetime_now)
     path = f"{folder_name}/{blob_name}.parquet"
 
     # Read the existing blob data from Azure Blob Storage, if available
-    df_actual: Optional[pl.DataFrame] = read_blob_from_container(container_name, path, blob_service_client)
+    df_actual: Optional[pl.DataFrame] = read_blob_from_container(bronze_container_name, path, blob_service_client)
 
     if df_actual is None:
         # If no existing data, write the new DataFrame directly to the blob
         print("No existing data found, writing new data to blob...")
-        write_blob_to_container(df_new, container_name, path, blob_service_client)
+        write_blob_to_container(df_new, bronze_container_name, path, blob_service_client)
+        df_merged = None # For the ternary operator
     else:
         # If existing data is found, merge it with the new data
         print("Existing data found, merging with new data...")
-        df_merged = merge_dataframes_on_hashedId(df_actual, df_new)
+        df_merged = merge_dataframes_on_id(df_actual, df_new, "_hashedId")
 
         # Write the merged DataFrame back to the blob
-        write_blob_to_container(df_merged, container_name, path, blob_service_client)
+        write_blob_to_container(df_merged, bronze_container_name, path, blob_service_client)
 
     print("Operation completed successfully.")
 
     return MaterializeResult(
         metadata={
-            "num_records": len(df_merged),  # Metadata can be any key-value pair
+            "num_records": len(df_merged if df_merged is not None else df_new) # ternary operator
         }
     )

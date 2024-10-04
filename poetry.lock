@@ -375,6 +375,20 @@ typing-extensions = ">=4.6.0"
 aio = ["azure-core[aio] (>=1.30.0)"]
 
 [[package]]
+name = "babel"
+version = "2.16.0"
+description = "Internationalization utilities"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "babel-2.16.0-py3-none-any.whl", hash = "sha256:368b5b98b37c06b7daf6696391c3240c938b37767d4584413e8438c5c435fa8b"},
+    {file = "babel-2.16.0.tar.gz", hash = "sha256:d1f3554ca26605fe173f3de0c65f750f5a42f924499bf134de6423582298e316"},
+]
+
+[package.extras]
+dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
+
+[[package]]
 name = "backoff"
 version = "2.2.1"
 description = "Function decoration for backoff and retry"
@@ -738,6 +752,20 @@ traitlets = ">=4"
 
 [package.extras]
 test = ["pytest"]
+
+[[package]]
+name = "commonmark"
+version = "0.9.1"
+description = "Python parser for the CommonMark Markdown spec"
+optional = false
+python-versions = "*"
+files = [
+    {file = "commonmark-0.9.1-py2.py3-none-any.whl", hash = "sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9"},
+    {file = "commonmark-0.9.1.tar.gz", hash = "sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60"},
+]
+
+[package.extras]
+test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
 
 [[package]]
 name = "constantly"
@@ -1600,6 +1628,32 @@ files = [
 graphql-core = ">=3.2,<3.3"
 
 [[package]]
+name = "great-tables"
+version = "0.12.0"
+description = "Easily generate information-rich, publication-quality tables from Python."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "great_tables-0.12.0-py3-none-any.whl", hash = "sha256:c5381ce9961c51a98478e21e89b681c2a19f55dc171bbd7dafc2ee77cb57fdc6"},
+    {file = "great_tables-0.12.0.tar.gz", hash = "sha256:f274c3b85354e3122967ec8f849daf0da5b7f9e46ef37600895e173496da214e"},
+]
+
+[package.dependencies]
+Babel = ">=2.13.1"
+commonmark = ">=0.9.1"
+htmltools = ">=0.4.1"
+importlib-metadata = "*"
+importlib-resources = "*"
+numpy = ">=1.22.4"
+typing-extensions = ">=3.10.0.0"
+
+[package.extras]
+all = ["great-tables[dev]", "great-tables[extra]"]
+dev = ["great-tables[dev-no-pandas]", "pandas"]
+dev-no-pandas = ["black", "griffe (==0.38.1)", "jupyter", "polars", "pre-commit (==2.15.0)", "pyarrow", "pyright (>=1.1.244)", "pytest (>=3)", "pytest-cov", "quartodoc (>=0.7.1)", "shiny", "syrupy"]
+extra = ["Pillow (>=10.2.0)", "selenium (>=4.18.1)"]
+
+[[package]]
 name = "greenlet"
 version = "3.1.1"
 description = "Lightweight in-process concurrent programming"
@@ -1779,6 +1833,25 @@ files = [
 ]
 
 [[package]]
+name = "htmltools"
+version = "0.5.3"
+description = "Tools for HTML generation and output."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "htmltools-0.5.3-py3-none-any.whl", hash = "sha256:5e2d12309fd6d9eb39a5fe8183da9ad90f6677d73dd41a82ded4b81ba0e43c86"},
+    {file = "htmltools-0.5.3.tar.gz", hash = "sha256:192e430498e8792831cd6cc5d7a43d3f13d8eb03eb7dd7d8e99f629bf73cf03c"},
+]
+
+[package.dependencies]
+packaging = ">=20.9"
+typing-extensions = ">=3.10.0.0"
+
+[package.extras]
+dev = ["Flake8-pyproject", "black (>=24.2.0)", "build", "flake8 (>=6.0.0)", "isort (>=5.11.2)", "pre-commit (>=2.15.0)", "pyright (>=1.1.348)", "wheel"]
+test = ["pytest (>=6.2.4)", "syrupy (>=4.6.0)"]
+
+[[package]]
 name = "httptools"
 version = "0.6.1"
 description = "A collection of framework independent HTTP protocol utils."
@@ -1867,6 +1940,48 @@ files = [
 
 [package.extras]
 all = ["flake8 (>=7.1.1)", "mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
+
+[[package]]
+name = "importlib-metadata"
+version = "8.5.0"
+description = "Read metadata from Python packages"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "importlib_metadata-8.5.0-py3-none-any.whl", hash = "sha256:45e54197d28b7a7f1559e60b95e7c567032b602131fbd588f1497f47880aa68b"},
+    {file = "importlib_metadata-8.5.0.tar.gz", hash = "sha256:71522656f0abace1d072b9e5481a48f07c138e00f079c38c8f883823f9c26bd7"},
+]
+
+[package.dependencies]
+zipp = ">=3.20"
+
+[package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+enabler = ["pytest-enabler (>=2.2)"]
+perf = ["ipython"]
+test = ["flufl.flake8", "importlib-resources (>=1.3)", "jaraco.test (>=5.4)", "packaging", "pyfakefs", "pytest (>=6,!=8.1.*)", "pytest-perf (>=0.9.2)"]
+type = ["pytest-mypy"]
+
+[[package]]
+name = "importlib-resources"
+version = "6.4.5"
+description = "Read resources from Python packages"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "importlib_resources-6.4.5-py3-none-any.whl", hash = "sha256:ac29d5f956f01d5e4bb63102a5a19957f1b9175e45649977264a1416783bb717"},
+    {file = "importlib_resources-6.4.5.tar.gz", hash = "sha256:980862a1d16c9e147a59603677fa2aa5fd82b87f223b6cb870695bcfce830065"},
+]
+
+[package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+enabler = ["pytest-enabler (>=2.2)"]
+test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "zipp (>=3.17)"]
+type = ["pytest-mypy"]
 
 [[package]]
 name = "incremental"
@@ -4817,6 +4932,25 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [[package]]
+name = "zipp"
+version = "3.20.2"
+description = "Backport of pathlib-compatible object wrapper for zip files"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "zipp-3.20.2-py3-none-any.whl", hash = "sha256:a817ac80d6cf4b23bf7f2828b7cabf326f15a001bea8b1f9b49631780ba28350"},
+    {file = "zipp-3.20.2.tar.gz", hash = "sha256:bc9eb26f4506fda01b81bcde0ca78103b6e62f991b381fec825435c836edbc29"},
+]
+
+[package.extras]
+check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1)"]
+cover = ["pytest-cov"]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+enabler = ["pytest-enabler (>=2.2)"]
+test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-ignore-flaky"]
+type = ["pytest-mypy"]
+
+[[package]]
 name = "zope-event"
 version = "5.0"
 description = "Very basic event publishing system"
@@ -4888,4 +5022,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.12,<3.13"
-content-hash = "bc67f223fabb3ce0a0abb81933036f0a600d5ca02a95d1f8e2000bebcd0ff4ec"
+content-hash = "dacea7fe637181314df045a3058761a1311de55b39a7b01646eb2abd5c6f95c5"
