@@ -91,7 +91,7 @@ def dim_team(context: AssetExecutionContext) -> MaterializeResult:
     # Define the container and path for the blob storage
     gold_container_name = scrapper_config['gold_container_name']
     folder_name = scrapper_config['folder_name']
-    path = f"{folder_name}/dim_date.parquet"
+    path = f"{folder_name}/dim_team.parquet"
 
     write_blob_to_container(df_processed, gold_container_name, path, blob_service_client)
 
