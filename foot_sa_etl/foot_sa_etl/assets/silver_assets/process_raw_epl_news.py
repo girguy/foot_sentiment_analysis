@@ -14,9 +14,7 @@ import polars as pl
 from dagster import (
     AssetExecutionContext,
     MaterializeResult,
-    asset,
-    Definitions,
-    load_assets_from_package_module
+    asset
 )
 
 # Add project root to sys.path
@@ -145,6 +143,34 @@ def process_html_column(df: pl.DataFrame) -> pl.DataFrame:
     return df.select(columns_to_keep)
 
 
+def filter_unwanted_titles(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Filters out rows in a Polars DataFrame where the 'title' column contains unwanted patterns.
+    These patterns correspond to specific phrases or structures found in sports articles that should be excluded.
+
+    :param df: A Polars DataFrame containing a 'title' column to filter.
+    :return: A Polars DataFrame with the unwanted rows filtered out.
+    """
+
+    # Define regex patterns to match unwanted strings in the 'title' column
+    patterns_to_filter = [
+        r"Catch up on the Premier League action",
+        r"Follow (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)'s (Premier League games|Carabao Cup)",
+        r"Follow\s+([A-Za-z\s]+)\s+v\s+([A-Za-z\s]+)",
+        r"who is your team facing\?",
+        r"send us your thoughts"
+    ]
+
+    # Combine the patterns into a single regex expression with the OR operator (|)
+    combined_pattern = "|".join(patterns_to_filter)
+
+    # Filter out rows where the 'title' column contains any of the unwanted patterns
+    df_filtered = df.filter(~pl.col("title").str.contains(combined_pattern))
+
+    return df_filtered
+
+
+
 @asset(
         deps=[bronze_scrappe_epl_news],
         group_name="epl_sentiment_analysis",
@@ -203,6 +229,9 @@ def silver_process_raw_epl_news(context: AssetExecutionContext) -> MaterializeRe
 
     # Keep unique rows based on column "id"
     df_processed = df_processed.unique(subset="id")
+
+    # clean df_processed by removing some of the records based on title
+    df_processed = filter_unwanted_titles(df_processed)
 
     # Define the container and path for the blob storage
     silver_container_name = scrapper_config['silver_container_name']

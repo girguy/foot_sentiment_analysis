@@ -30,6 +30,21 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 - **Poetry**: Dependency management and virtual environment handling.
 - **Git**: Version control and collaboration.
 
+## TO DO :
+- filtering out rows having strings such as : "Catch up on the Premier League action" **DONE**
+- filtering out rows having strings such as : "Follow [Monday|Tuesday|...|Sunday]'s Premier League games" **DONE**
+- filtering out rows having strings such as : "Follow [Monday|Tuesday|...|Sunday]'s Carabao Cup" **DONE**
+- filtering out rows having strings such as : "Follow teamA v teamB" **DONE**
+- filtering out rows having strings such as : "check "who is your team facing?" **DONE**
+- filtering out rows having strings such as : "send us your thoughts" **DONE**
+- the cleaning needs to be done in process_raw_epl_news.py
+- look in the title ->  "the fans' verdict"
+  - look in content -> "Here are some of your comments" then extract the fan reactions
+- Create a table fanReaction : ["idArticle", "fanReaction"]
+- Create a table otherReaction : ["idArticle", "otherReaction"]
+- scrap 10 pages instead of two
+- one time a week -> purge raw -> create new job
+
 ## Project Structure
 ```bash
 ├── data/                   # Raw and processed data
@@ -41,3 +56,6 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 └── README.md               # Project documentation
 
 PS : This is not the right project structure. I need a tool extracting the right one
+
+
+

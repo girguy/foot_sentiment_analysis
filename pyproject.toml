@@ -21,6 +21,7 @@ library = "^0.0.0"
 asyncio = "^3.4.3"
 aiohttp = "^3.10.8"
 great-tables = "^0.12.0"
+pattern = "^3.6.0"
 
 [tool.poetry.group.dev.dependencies]
 ipykernel = "^6.29.5"
