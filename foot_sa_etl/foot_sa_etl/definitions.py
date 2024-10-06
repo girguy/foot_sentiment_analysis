@@ -14,7 +14,7 @@ from dagster import (
 # from . import assets
 # it's not needed to load bronze_assets, because they will be
 # automatically loaded thanks to silver_assets
-from .assets import silver_assets, gold_assets, example_assets
+from .assets import bronze_assets, gold_assets, example_assets
 
 # from assets import 
 
@@ -30,8 +30,8 @@ daily_refresh_schedule = ScheduleDefinition(
 # their source file attached as metadata.
 all_assets = with_source_code_references(
     [
-        *load_assets_from_package_module(example_assets),
-        *load_assets_from_package_module(silver_assets)
+        *load_assets_from_package_module(bronze_assets),
+        *load_assets_from_package_module(gold_assets)
     ]
 )
 

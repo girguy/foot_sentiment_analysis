@@ -125,7 +125,7 @@ def process_html_column(df: pl.DataFrame) -> pl.DataFrame:
     # Apply the extraction function once and unpack the result into three new columns
     new_columns = df.select(
         pl.col("html").map_elements(extract_html_fields, return_dtype=pl.Struct([
-            pl.Field("publishedDate", pl.Utf8),
+            pl.Field("publishedDate", pl.Utf8), 
             pl.Field("title", pl.Utf8),
             pl.Field("content", pl.Utf8)
         ])).alias("extracted")
@@ -232,6 +232,11 @@ def silver_process_raw_epl_news(context: AssetExecutionContext) -> MaterializeRe
 
     # clean df_processed by removing some of the records based on title
     df_processed = filter_unwanted_titles(df_processed)
+
+    # Cast column 'publishedDate'into datetime format
+    df_processed = df_processed.with_columns(
+        pl.col('publishedDate').str.strptime(pl.Datetime, format='%Y-%m-%d %H:%M:%S')
+    )
 
     # Define the container and path for the blob storage
     silver_container_name = scrapper_config['silver_container_name']
