@@ -30,9 +30,9 @@ from utils.azure_blob_utils import (
 )
 from utils.common_helpers import generate_hash
 
-# load assets bronze_scrappe_epl_news
+# load assets scrappe_epl_news
 # in order to be used as dependency
-from assets.bronze_assets.scrappe_epl_news import bronze_scrappe_epl_news
+from assets.bronze_assets.scrappe_epl_news import scrappe_epl_news
 
 
 load_dotenv()
@@ -91,7 +91,7 @@ def extract_html_fields(html: str) -> tuple:
 def parse_published_date(date_str: str) -> str:
     """
     Parses a published date string like 'published at 22:46 2 October' and converts
-    it to a 'YYYY-MM-DD HH:MM:SS' format.
+    it to a 'YYYY-MM-DD' format.
     
     :param date_str: The date string to be parsed
     :return: A formatted date string
@@ -108,7 +108,7 @@ def parse_published_date(date_str: str) -> str:
         datetime_obj = datetime.strptime(f"{time_part} {day_part} {month_part} {current_year}", "%H:%M %d %B %Y")
 
         # Return the date in the desired format
-        return datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+        return datetime_obj.strftime("%Y-%m-%d")
     except Exception as e:
         print(f"Error parsing date: {date_str}, Error: {e}")
         return None  # or handle the error as needed
@@ -172,11 +172,11 @@ def filter_unwanted_titles(df: pl.DataFrame) -> pl.DataFrame:
 
 
 @asset(
-        deps=[bronze_scrappe_epl_news],
+        deps=[scrappe_epl_news],
         group_name="epl_sentiment_analysis",
         compute_kind="polars"
 )
-def silver_process_raw_epl_news(context: AssetExecutionContext) -> MaterializeResult:
+def process_raw_epl_news(context: AssetExecutionContext) -> MaterializeResult:
     """
     This function processes scraped EPL news data stored in Azure Blob Storage. 
     It reads Parquet files, processes HTML content, generates a unique ID, and uploads the processed data 
@@ -235,7 +235,7 @@ def silver_process_raw_epl_news(context: AssetExecutionContext) -> MaterializeRe
 
     # Cast column 'publishedDate'into datetime format
     df_processed = df_processed.with_columns(
-        pl.col('publishedDate').str.strptime(pl.Datetime, format='%Y-%m-%d %H:%M:%S')
+        pl.col('publishedDate').str.to_date()
     )
 
     # Define the container and path for the blob storage

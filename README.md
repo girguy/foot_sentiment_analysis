@@ -40,10 +40,13 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 - the cleaning needs to be done in process_raw_epl_news.py **DONE**
 - look in the title ->  "the fans' verdict" **DONE**
   - look in content -> "Here are some of your comments" then extract the fan reactions
-- Change the date from datetime to date (yyyy-mm-dd)
-- sentiment analysis on reaction table
-- rename bronze_scrappe_epl_news to scrappe_epl_news
-- rename silver_process_raw_epl_news to process_raw_epl_news
+- Change the date from datetime to date (yyyy-mm-dd) **DONE**
+- rename bronze_scrappe_epl_news to scrappe_epl_news **DONE**
+- rename silver_process_raw_epl_news to process_raw_epl_news **DONE**
+- sentiment analysis on reaction table **DONE**
+- terminate fact_reaction table
+- sentiment analysis on article (title) table
+- start fact_title table
 - scrap 10 pages instead of two
 - one time a week -> purge raw -> create new job
 

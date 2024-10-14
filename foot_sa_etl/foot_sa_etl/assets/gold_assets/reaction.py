@@ -26,9 +26,9 @@ from utils.azure_blob_utils import (
 )
 from utils.common_helpers import generate_hash
 
-# load assets bronze_scrappe_epl_news
+# load assets scrappe_epl_news
 # in order to be used as dependency
-from assets.silver_assets.process_raw_epl_news import silver_process_raw_epl_news
+from assets.silver_assets.process_raw_epl_news import process_raw_epl_news
 
 
 load_dotenv()
@@ -218,7 +218,7 @@ def create_reaction_table(df):
 
 
 @asset(
-        deps=[silver_process_raw_epl_news],
+        deps=[process_raw_epl_news],
         group_name="epl_sentiment_analysis",
         compute_kind="polars"
 )

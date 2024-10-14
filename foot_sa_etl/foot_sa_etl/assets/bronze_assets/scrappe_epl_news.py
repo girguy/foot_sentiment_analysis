@@ -158,7 +158,7 @@ async def scrapper(urls: List[Tuple[str, int, str]]) -> List[List[str]]:
 
 
 @asset(group_name="epl_sentiment_analysis", compute_kind="polars")
-def bronze_scrappe_epl_news(context: AssetExecutionContext) -> MaterializeResult:
+def scrappe_epl_news(context: AssetExecutionContext) -> MaterializeResult:
     """
     This function scrapes EPL team news from BBC Sport and stores the data in Azure Blob Storage
     as a Parquet file. If existing data is found in the blob, it merges the new data with the old data.
