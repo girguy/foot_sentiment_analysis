@@ -15,7 +15,7 @@ from dagster import (
 )
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 # Local project utility imports
 from utils.azure_blob_utils import (
@@ -36,29 +36,31 @@ load_dotenv()
 scrapper_config_path = os.path.join(sys.path[-1], 'scrapper_config.json')
 
 
-def process_team_table(df):
+def process_dim_date_table(df):
     """
-    Processes a DataFrame to create a unique team dimension table. The function extracts unique team names 
-    from the 'teamName' column, assigns each team a unique ID, and returns a DataFrame with 'team_id' and 
-    'team_name' columns, sorted by team name.
+    Processes a DataFrame and extracts date-related information from the 'publishedDate' column 
+    to create a Date Dimension table. The resulting table contains the date, year, month, day, 
+    and week of the year, which can be used for date-based analysis or to populate a Date Dimension 
+    table in a star schema.
 
-    :param df: A Polars DataFrame that contains a 'teamName' column with team names.
-    :return: A new Polars DataFrame with two columns: 'team_id' (a unique identifier for each team) and 'team_name'.
+    :param df: A Polars DataFrame that contains a 'publishedDate' column, which should be a date or timestamp.
+    :return: A new Polars DataFrame with date-related columns: 'date', 'year', 'month', 'day', and 'week_of_year'.
     """
 
-    # Select unique team names from the DataFrame
-    df_selected = df.select(pl.col("teamName")).unique()
+    # Extract the 'publishedDate' column as a Series for date operations
+    date_series = df.select('publishedDate').to_series()
 
-    # Rename the 'teamName' column to 'team_name' for consistent naming conventions
-    df_selected = df_selected.rename({"teamName": "team_name"}).sort(by='team_name')
+    # Create the Date Dimension Table by extracting relevant date components
+    date_dim = pl.DataFrame({
+        "date": date_series,                   # Original date column
+        "year": date_series.dt.year(),         # Extract the year from the date
+        "month": date_series.dt.month(),       # Extract the month from the date
+        "day": date_series.dt.day(),           # Extract the day from the date
+        "week_of_year": date_series.dt.week()  # Extract the week of the year (ISO week 1 to 53)
+    })
 
-    # Add a 'team_id' column that assigns a unique ID to each team, starting from 1
-    df_selected = df_selected.with_columns(
-        team_id=range(1, df_selected.shape[0] + 1)  # Generates a sequential range of IDs
-    )
-
-    # Return a DataFrame with only 'team_id' and 'team_name', ensuring it's sorted by team name
-    return df_selected.select(['team_id', 'team_name'])
+    # Return the newly created Date Dimension table
+    return date_dim
 
 
 
@@ -67,7 +69,7 @@ def process_team_table(df):
         group_name="epl_sentiment_analysis",
         compute_kind="polars"
 )
-def dim_team(context: AssetExecutionContext) -> MaterializeResult:
+def dim_date(context: AssetExecutionContext) -> MaterializeResult:
     # Load the JSON file
     with open(scrapper_config_path, 'r') as file:
         scrapper_config = json.load(file)
@@ -86,12 +88,12 @@ def dim_team(context: AssetExecutionContext) -> MaterializeResult:
 
     df = read_all_parquets_from_container(silver_container_name, folder_name, blob_service_client)
 
-    df_processed = process_team_table(df)
+    df_processed = process_dim_date_table(df)
 
     # Define the container and path for the blob storage
     gold_container_name = scrapper_config['gold_container_name']
     folder_name = scrapper_config['folder_name']
-    path = f"{folder_name}/dim_team.parquet"
+    path = f"{folder_name}/dim_date.parquet"
 
     write_blob_to_container(df_processed, gold_container_name, path, blob_service_client)
 

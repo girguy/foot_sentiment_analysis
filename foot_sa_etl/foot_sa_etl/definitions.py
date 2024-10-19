@@ -14,7 +14,17 @@ from dagster import (
 # from . import assets
 # it's not needed to load bronze_assets, because they will be
 # automatically loaded thanks to silver_assets
-from .assets import bronze_assets, gold_assets, example_assets
+from .assets.bronze_assets.scrappe_epl_news import scrappe_epl_news
+from .assets.silver_assets.process_raw_epl_news import process_raw_epl_news
+from .assets.gold_assets.reaction import reaction
+from .assets.gold_assets.article import article
+from .assets.gold_assets.dim_assets.dim_article import dim_article
+from .assets.gold_assets.dim_assets.dim_team import dim_team
+from .assets.gold_assets.dim_assets.dim_date import dim_date
+from .assets.gold_assets.dim_assets.dim_sentiment import dim_sentiment
+from .assets.gold_assets.dim_assets.dim_type import dim_type
+from .assets.gold_assets.fact_assets.fact_reaction import fact_reaction
+
 
 # from assets import 
 
@@ -28,10 +38,14 @@ daily_refresh_schedule = ScheduleDefinition(
 # function definitions, you can use the with_source_code_references
 # utility. Any asset definitions passed to the utility will have
 # their source file attached as metadata.
+
 all_assets = with_source_code_references(
     [
-        *load_assets_from_package_module(bronze_assets),
-        *load_assets_from_package_module(gold_assets)
+        scrappe_epl_news,
+        process_raw_epl_news,
+        reaction, article,
+        dim_article, dim_team, dim_date, dim_sentiment, dim_type,
+        fact_reaction
     ]
 )
 

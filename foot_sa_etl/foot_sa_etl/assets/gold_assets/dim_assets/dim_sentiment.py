@@ -15,7 +15,7 @@ from dagster import (
 )
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 # Local project utility imports
 from utils.azure_blob_utils import (

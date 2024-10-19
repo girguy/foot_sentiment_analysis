@@ -15,7 +15,7 @@ from dagster import (
 )
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 # Local project utility imports
 from utils.azure_blob_utils import (
@@ -60,30 +60,6 @@ def process_team_table(df):
     # Return a DataFrame with only 'team_id' and 'team_name', ensuring it's sorted by team name
     return df_selected.select(['team_id', 'team_name'])
 
-def process_dim_article_table(df):
-    """
-    Processes a DataFrame to create a dimension table for articles. The function extracts relevant article information, 
-    assigns a foreign key 'fk_team_id' by joining with the team dimension, and returns a clean DataFrame with the 
-    appropriate columns for article ID, team ID, article title, and publication date.
-
-    :param df: A Polars DataFrame that contains article data with columns such as 'id', 'title', 'publishedDate', and 'teamName'.
-    :return: A Polars DataFrame with columns: 'article_id', 'fk_team_id', 'article_title', and 'published_at'.
-    """
-
-    # Call get_team_table() to retrieve the unique team dimension table, which includes 'team_id' and 'team_name'
-    team_df = process_team_table(df)
-
-    df_processed = df \
-        .rename({"id": "article_id"}) \
-        .rename({"title": "article_title"}) \
-        .rename({"publishedDate": "published_at"}) \
-        .rename({"teamName": "team_name"}) \
-        .join(team_df, on="team_name") \
-        .rename({"team_id": "fk_team_id"}) \
-        .select(["article_id", "fk_team_id", "article_title", "published_at"])
-
-    # Return the processed article dimension table
-    return df_processed
 
 
 @asset(
@@ -91,7 +67,7 @@ def process_dim_article_table(df):
         group_name="epl_sentiment_analysis",
         compute_kind="polars"
 )
-def dim_article(context: AssetExecutionContext) -> MaterializeResult:
+def dim_team(context: AssetExecutionContext) -> MaterializeResult:
     # Load the JSON file
     with open(scrapper_config_path, 'r') as file:
         scrapper_config = json.load(file)
@@ -110,12 +86,12 @@ def dim_article(context: AssetExecutionContext) -> MaterializeResult:
 
     df = read_all_parquets_from_container(silver_container_name, folder_name, blob_service_client)
 
-    df_processed = process_dim_article_table(df)
+    df_processed = process_team_table(df)
 
     # Define the container and path for the blob storage
     gold_container_name = scrapper_config['gold_container_name']
     folder_name = scrapper_config['folder_name']
-    path = f"{folder_name}/dim_article.parquet"
+    path = f"{folder_name}/dim_team.parquet"
 
     write_blob_to_container(df_processed, gold_container_name, path, blob_service_client)
 

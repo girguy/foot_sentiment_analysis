@@ -15,13 +15,18 @@ from dagster import (
 )
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 
 # Local project utility imports
 from utils.azure_blob_utils import (
     create_blob_client_with_connection_string, 
+    read_blob_from_container, 
     write_blob_to_container
 )
+
+# load assets bronze_scrappe_epl_news
+# in order to be used as dependency
+from assets.gold_assets.article import article
 
 
 load_dotenv()
@@ -30,21 +35,26 @@ load_dotenv()
 scrapper_config_path = os.path.join(sys.path[-1], 'scrapper_config.json')
 
 
+def process_article_table(df):
+    df_processed = df.with_columns(
+        fk_title_id = pl.concat_str(
+            [
+                pl.col('article_id'),
+                pl.lit('title')
+            ],
+            separator='_'
+        )
+    )
+    return df_processed
 
-def create_type_table():
-    dict_type = {
-        'type_id': [0, 1],
-        'type': ['reaction', 'title'],
-    }
-
-    return pl.from_dict(dict_type)
 
 
 @asset(
+        deps=[article],
         group_name="epl_sentiment_analysis",
         compute_kind="polars"
 )
-def dim_type(context: AssetExecutionContext) -> MaterializeResult:
+def dim_article(context: AssetExecutionContext) -> MaterializeResult:
     # Load the JSON file
     with open(scrapper_config_path, 'r') as file:
         scrapper_config = json.load(file)
@@ -58,22 +68,24 @@ def dim_type(context: AssetExecutionContext) -> MaterializeResult:
     blob_service_client = create_blob_client_with_connection_string(connection_string)
     # List all blobs in the container
 
-    silver_container_name = scrapper_config['silver_container_name']
+    gold_container_name = scrapper_config['gold_container_name']
     folder_name = scrapper_config['folder_name']
 
-    df_type = create_type_table()
+    df_article = read_blob_from_container(gold_container_name, f"{folder_name}/article.parquet", blob_service_client)
+
+    df_dim_article = process_article_table(df_article)
 
     # Define the container and path for the blob storage
     gold_container_name = scrapper_config['gold_container_name']
     folder_name = scrapper_config['folder_name']
-    path = f"{folder_name}/dim_type.parquet"
+    path = f"{folder_name}/dim_article.parquet"
 
-    write_blob_to_container(df_type, gold_container_name, path, blob_service_client)
+    write_blob_to_container(df_dim_article, gold_container_name, path, blob_service_client)
 
     print("Operation completed successfully.")
 
     return MaterializeResult(
         metadata={
-            "num_records": len(df_type) # ternary operator
+            "num_records": len(df_dim_article) # ternary operator
         }
     )
