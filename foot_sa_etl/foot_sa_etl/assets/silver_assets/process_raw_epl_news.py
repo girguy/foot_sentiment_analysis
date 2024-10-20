@@ -122,6 +122,9 @@ def process_html_column(df: pl.DataFrame) -> pl.DataFrame:
     :param df: Input Polars DataFrame containing an 'html' column
     :return: A new DataFrame with 'publishedDate', 'title', and 'content' columns
     """
+    # delete rows that were not correctly retreived
+    df = df.filter(pl.col('html') == 'HTTP error 500')
+
     # Apply the extraction function once and unpack the result into three new columns
     new_columns = df.select(
         pl.col("html").map_elements(extract_html_fields, return_dtype=pl.Struct([

@@ -22,8 +22,9 @@ from .assets.gold_assets.dim_assets.dim_article import dim_article
 from .assets.gold_assets.dim_assets.dim_team import dim_team
 from .assets.gold_assets.dim_assets.dim_date import dim_date
 from .assets.gold_assets.dim_assets.dim_sentiment import dim_sentiment
-from .assets.gold_assets.dim_assets.dim_type import dim_type
 from .assets.gold_assets.fact_assets.fact_reaction import fact_reaction
+from .assets.gold_assets.fact_assets.fact_title import fact_title
+from .assets.gold_assets.fact_assets.fact_sentiment_trend import fact_sentiment_trend
 
 
 # from assets import 
@@ -44,8 +45,8 @@ all_assets = with_source_code_references(
         scrappe_epl_news,
         process_raw_epl_news,
         reaction, article,
-        dim_article, dim_team, dim_date, dim_sentiment, dim_type,
-        fact_reaction
+        dim_article, dim_team, dim_date, dim_sentiment,
+        fact_reaction, fact_title, fact_sentiment_trend
     ]
 )
 

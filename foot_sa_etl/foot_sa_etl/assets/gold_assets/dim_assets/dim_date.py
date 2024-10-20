@@ -52,7 +52,7 @@ def process_dim_date_table(df):
 
     # Create the Date Dimension Table by extracting relevant date components
     date_dim = pl.DataFrame({
-        "date": date_series,                   # Original date column
+        "date_id": date_series,                # Original date column
         "year": date_series.dt.year(),         # Extract the year from the date
         "month": date_series.dt.month(),       # Extract the month from the date
         "day": date_series.dt.day(),           # Extract the day from the date
