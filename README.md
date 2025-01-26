@@ -61,6 +61,3 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 └── README.md               # Project documentation
 
 PS : This is not the right project structure. I need a tool extracting the right one
-
-
-

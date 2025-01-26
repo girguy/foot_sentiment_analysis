@@ -1,33 +1,23 @@
-[tool.poetry]
-name = "foot_sentiment_analysis"
+[project]
+name = "foot-sentiment-analysis"
 version = "0.1.0"
-description = ""
-authors = ["GGuy <guy.girineza@hotmail.com>"]
+description = "Media sentiment analysis project on the Premier League using data from BBC Sports."
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.12,<3.13"
-requests = "^2.32.3"
-numpy = "^1.26.4"
-polars = "^1.8.2"
-taipy = "^3.1.1"
-beautifulsoup4 = "^4.12.3"
-azure-storage-blob = "^12.23.1"
-dagster = "^1.8.9"
-dagster-webserver = "^1.8.9"
-matplotlib = "^3.9.2"
-tweepy = "^4.14.0"
-library = "^0.0.0"
-asyncio = "^3.4.3"
-aiohttp = "^3.10.8"
-great-tables = "^0.12.0"
-pattern = "^3.6.0"
-
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.29.5"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-package-mode = false
+requires-python = ">=3.12"
+dependencies = [
+    "numpy==1.26.4",
+    "requests==2.32.3",
+    "polars>=1.16.2",
+    "taipy>=3.1.1",
+    "beautifulsoup4==4.12.3",
+    "azure-storage-blob>=12.23.1",
+    "dagster>=1.8.9",
+    "dagster-webserver==1.8.9",
+    "matplotlib>=3.9.2",
+    "tweepy==4.14.0",
+    "library>=0.0.0",
+    "asyncio>=3.4.3",
+    "aiohttp>=3.10.8",
+    "great-tables>=0.12.0",
+    "pattern>=0.0.1a0",
+]
