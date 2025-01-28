@@ -1,6 +1,6 @@
 {
     "base_url" : "https://www.bbc.com/sport/football/teams",
-    "nb_page" : 10,
+    "nb_page" : 1,
     "bronze_container_name" : "bronze",
     "silver_container_name" : "silver",
     "gold_container_name" : "gold",

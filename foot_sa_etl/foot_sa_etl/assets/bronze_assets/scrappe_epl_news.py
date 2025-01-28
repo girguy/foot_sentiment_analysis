@@ -9,6 +9,7 @@ from typing import List, Tuple, Union, Optional
 import aiohttp
 import polars as pl
 from dotenv import load_dotenv
+from dagster import EnvVar
 
 # Dagster imports
 from dagster import AssetExecutionContext, MaterializeResult, asset
@@ -181,9 +182,10 @@ def scrappe_epl_news(context: AssetExecutionContext) -> MaterializeResult:
         scrapper_config['base_url']
     )
 
+    
     # Scrape the data from the URLs asynchronously
     results = asyncio.run(scrapper(team_urls))
-
+    
     # Get the current datetime
     datetime_now = get_current_datetime()
 

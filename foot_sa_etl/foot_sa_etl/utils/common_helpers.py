@@ -1,7 +1,7 @@
 import hashlib
 import pytz  # To manage time zones
 from datetime import datetime
-from pattern.en import sentiment
+from textblob import TextBlob
 
 
 def get_current_datetime(timezone: str = 'Europe/Vienna') -> str:
@@ -101,9 +101,9 @@ def extract_sentiment(reaction_id: str, content: str, threshold_polarity: float)
     """
     
     # Extract the sentiment analysis results from the content (polarity and subjectivity)
-    res = sentiment(content)
-    polarity_value = res[0]  # Polarity value is in the range [-1, 1]
-    subjectivity_value = res[1]  # Subjectivity value is in the range [0, 1]
+    res = TextBlob(content)
+    polarity_value = res.sentiment.polarity  # Polarity value is in the range [-1, 1]
+    subjectivity_value = res.sentiment.subjectivity  # Subjectivity value is in the range [0, 1]
 
     # Classify the polarity based on the polarity value and threshold
     polarity = get_sentiment(polarity_value, threshold_polarity)
