@@ -1,0 +1,83 @@
+Table dim_team {
+  team_id integer [primary key]
+  team_name text
+}
+
+Table dim_article {
+  article_id integer [primary key]
+  fk_team_id integer
+  fk_title_id varchar
+  published_at timestamp
+}
+
+Table dim_sentiment {
+  sentiment_id integer [primary key, note: '0, 1, 2']
+  sentiment_label varchar [note: 'negative, neutral, positive']
+  sentiment_value int [note: '-1, 0, 1']
+}
+
+Table dim_date {
+  date_id timestamp [primary key]
+  year integer
+  month integer
+  week integer
+  day integer
+  week_of_year integer
+}
+
+
+// ---------------
+
+
+Table fact_sentiment_trend{
+  trend_id integer [primary key]
+  fk_team_id integer
+  fk_date_id integer
+  total_articles integer
+  subjectivity_level float
+  trend_value float
+  total_positive_articles integer
+  total_negative_articles integer
+  total_neutral_articles integer
+}
+
+Table fact_reaction {
+  reaction_id integer [primary key]
+  fk_article_id integer
+  fk_sentiment_id integer
+  fk_team_id integer
+  fk_date_id timestamp
+  content text [note: 'Content of the post']
+  sentiment_score float // [-1, 1]
+  subjectivity_score float
+  is_subjective bool
+  is_fan bool
+  type varchar
+}
+
+Table fact_title { // TO DO
+  title_id integer [primary key]
+  fk_sentiment_id integer
+  fk_team_id integer
+  fk_date_id timestamp
+  title varchar [note: 'Title of the post']
+  sentiment_score float // [-1, 1]
+  subjectivity_score float
+  is_subjective bool
+  type varchar
+}
+
+// ---------------
+
+Ref: fact_reaction.fk_article_id - dim_article.article_id
+Ref: fact_reaction.fk_sentiment_id - dim_sentiment.sentiment_id
+Ref: fact_reaction.fk_team_id - dim_team.team_id
+Ref: fact_reaction.fk_date_id - dim_date.date_id
+
+Ref: fact_title.fk_sentiment_id - dim_sentiment.sentiment_id
+Ref: fact_title.fk_team_id - dim_team.team_id
+Ref: fact_title.fk_date_id - dim_date.date_id
+Ref: fact_title.title_id - dim_article.fk_title_id
+
+Ref: fact_sentiment_trend.fk_team_id - dim_team.team_id
+Ref: fact_sentiment_trend.fk_date_id - dim_date.date_id

@@ -201,3 +201,10 @@ foot_sa_etl/tmpy9jgez0k/history/runs/index.db
 foot_sa_etl/tmpy9jgez0k/schedules/schedules.db
 foot_sa_etl/foot_sa_etl/assets/gold_assets/test.ipynb
 
+uv.lock
+foot_sa_etl/foot_sa_etl/assets/gold_assets/test.ipynb
+*test.ipynb
+**/compute_logs/
+**/history/
+**/runs/
+**/schedules/
