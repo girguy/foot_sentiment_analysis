@@ -20,14 +20,12 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 ## Tools & Technologies
 - **Dagster**: Task orchestration and pipeline management.
 - **Python**: Main programming language for data extraction, transformation, and analysis.
-- **Polars** or **FireDucks**: Efficient data manipulation and processing of large datasets.
+- **Polars**: Efficient data manipulation and processing of large datasets.
 - **PostgreSQL**: Database to store cleaned and processed data.
 - **Sentiment Analysis**: Implemented using NLP libraries such as:
   - **TextBlob**
-  - **VADER**
-  - **Transformers** (for more advanced sentiment classification models).
 - **Streamlit** or **Taipy**: Framework for building the interactive dashboard.
-- **Poetry**: Dependency management and virtual environment handling.
+- **UV**: Dependency management and virtual environment handling.
 - **Git**: Version control and collaboration.
 
 ## TO DO :
@@ -44,11 +42,15 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 - rename bronze_scrappe_epl_news to scrappe_epl_news **DONE**
 - rename silver_process_raw_epl_news to process_raw_epl_news **DONE**
 - sentiment analysis on reaction table **DONE**
-- terminate fact_reaction table
-- sentiment analysis on article (title) table
-- start fact_title table
-- scrap 10 pages instead of two
+- terminate fact_reaction table **DONE**
+- sentiment analysis on article (title) table **DONE**
+- start fact_title table **DONE**
+- scrap 10 pages instead of two **DONE**
+- scrapper_config.json should be at the root of the project **only**
+- utils should be loaded as a package ! **important** (and be put at the root of the project)
+- ".env" should be at the root of the project
 - one time a week -> purge raw -> create new job
+- Start Taipy tutorial
 
 ## Project Structure
 ```bash
