@@ -58,11 +58,11 @@ def get_sentiment(polarity: float, threshold: float) -> str:
     # Check if the polarity is in the negative range: [-1, 0 - threshold[
     if (polarity >= -1) and (polarity < (0 - threshold)):
         return 'negative'
-    
+
     # Check if the polarity is in the positive range: [0 + threshold, 1]
     elif (polarity <= 1) and (polarity > (0 + threshold)):
         return 'positive'
-    
+
     # If the polarity is in the neutral range: [-threshold, threshold[
     else:
         return 'neutral'
@@ -71,7 +71,7 @@ def get_sentiment(polarity: float, threshold: float) -> str:
 def is_subjectivity(subjectivity: float) -> str:
     """
     Determines whether the given subjectivity score corresponds to a subjective or objective sentiment.
-    
+
     :param subjectivity: The subjectivity score, a float in the range [0, 1].
     :return: A string representing whether the sentiment is 'subjective' or 'objective'.
     """
@@ -79,7 +79,7 @@ def is_subjectivity(subjectivity: float) -> str:
     # If the subjectivity score is in the range [0.5, 1], the sentiment is subjective
     if (subjectivity >= 0.5) and (subjectivity <= 1):
         return 'subjective'
-    
+
     # If the subjectivity score is in the range [0, 0.5[, the sentiment is objective
     else:
         return 'objective'
@@ -88,7 +88,7 @@ def is_subjectivity(subjectivity: float) -> str:
 def extract_sentiment(reaction_id: str, content: str, threshold_polarity: float) -> tuple:
     """
     Extracts sentiment and subjectivity from the content and returns detailed sentiment analysis.
-    
+
     :param reaction_id: The unique identifier for the reaction.
     :param content: The content or text from which sentiment and subjectivity are to be extracted.
     :param threshold_polarity: The threshold used to classify sentiment as neutral.
@@ -99,7 +99,7 @@ def extract_sentiment(reaction_id: str, content: str, threshold_polarity: float)
         - subjectivity_value (float): The raw subjectivity score, a float in the range [0, 1].
         - subjectivity (str): The classified subjectivity ('subjective' or 'objective').
     """
-    
+
     # Extract the sentiment analysis results from the content (polarity and subjectivity)
     res = TextBlob(content)
     polarity_value = res.sentiment.polarity  # Polarity value is in the range [-1, 1]

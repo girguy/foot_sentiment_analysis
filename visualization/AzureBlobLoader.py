@@ -1,26 +1,15 @@
-import os
-import sys
 import json
-from dotenv import load_dotenv
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from utils.azure_blob_utils import (
-    create_blob_client_with_connection_string, 
+    create_blob_client_with_connection_string,
     read_blob_from_container
 )
 
-class AzureBlobLoader:
-    def __init__(self, config_path):
-        self._load_env_variables()
-        self.config = self._load_config(config_path)
-        self.blob_service_client = self._create_blob_client()
 
-    def _load_env_variables(self):
-        load_dotenv()
-        self.connection_string = os.getenv("CONN_STRING_AZURE_STORAGE")
-        if self.connection_string is None:
-            raise EnvironmentError("Azure storage connection string not found in environment variables.")
+class AzureBlobLoader:
+    def __init__(self, CONFIG, CONN_STRING_AZURE_STORAGE):
+        self.connection_string = CONN_STRING_AZURE_STORAGE
+        self.config = CONFIG
+        self.blob_service_client = self._create_blob_client()
 
     def _load_config(self, config_path):
         with open(config_path, 'r') as file:

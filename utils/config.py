@@ -1,12 +1,25 @@
-{
-    "base_url" : "https://www.bbc.com/sport/football/teams",
-    "nb_page" : 10,
-    "bronze_container_name" : "bronze",
-    "silver_container_name" : "silver",
-    "gold_container_name" : "gold",
-    "folder_name" : "epl_news",
-    "silver_blob_name" : "processed_data",
-    "teams" :
+import os
+from dotenv import load_dotenv
+
+
+def load_env_variables():
+    load_dotenv()
+    connection_string = os.getenv("CONN_STRING_AZURE_STORAGE")
+    if connection_string is None:
+        raise EnvironmentError("Azure storage connection string not found in environment variables.")
+    return connection_string
+
+
+CONFIG = {
+    "base_url": "https://www.bbc.com/sport/football/teams",
+    "nb_page": 10,
+    "bronze_container_name": "bronze",
+    "silver_container_name": "silver",
+    "gold_container_name": "gold",
+    "folder_name": "epl_news",
+    "silver_blob_name": "processed_data",
+    "connection_string": "CONN_STRING_AZURE_STORAGE",
+    "teams":
         {
             "AFC Bournemouth": "afc-bournemouth",
             "Arsenal": "arsenal",
@@ -30,3 +43,5 @@
             "Wolverhampton Wanderers": "wolverhampton-wanderers"
         }
 }
+
+CONN_STRING_AZURE_STORAGE = load_env_variables()

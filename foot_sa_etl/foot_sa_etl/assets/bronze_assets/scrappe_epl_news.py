@@ -1,21 +1,21 @@
 # Standard library imports
 import os
 import sys
-import json
 import asyncio
 from typing import List, Tuple, Union, Optional
 
 # Third-party imports
 import aiohttp
 import polars as pl
-from dotenv import load_dotenv
-from dagster import EnvVar
 
 # Dagster imports
 from dagster import AssetExecutionContext, MaterializeResult, asset
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
+
+# Config parameters
+from utils.config import CONFIG, CONN_STRING_AZURE_STORAGE
 
 # Local project utility imports
 from utils.azure_blob_utils import (
@@ -26,11 +26,6 @@ from utils.azure_blob_utils import (
 )
 from utils.common_helpers import get_current_datetime, generate_hash, create_blob_name
 
-
-load_dotenv()
-
-# Get path of the config file
-scrapper_config_path = os.path.join(sys.path[-1], 'scrapper_config.json')
 
 
 def get_teams_url(epl_teams, number_of_pages, base_url: str) -> List[List[Union[str, int, str]]]:
@@ -171,15 +166,11 @@ def scrappe_epl_news(context: AssetExecutionContext) -> MaterializeResult:
     - None
     """
 
-    # Load the JSON file
-    with open(scrapper_config_path, 'r') as file:
-        scrapper_config = json.load(file)
-
     # Get the list of team URLs to scrape
     team_urls = get_teams_url(
-        scrapper_config['teams'],
-        scrapper_config['nb_page'],
-        scrapper_config['base_url']
+        CONFIG['teams'],
+        CONFIG['nb_page'],
+        CONFIG['base_url']
     )
 
     
@@ -192,17 +183,12 @@ def scrappe_epl_news(context: AssetExecutionContext) -> MaterializeResult:
     # Create a new Polars DataFrame from the scraped results
     df_new = create_dataframe(results, datetime_now)
 
-    # Load environment variables
-    connection_string = os.environ.get("CONN_STRING_AZURE_STORAGE")
-    if connection_string is None:
-        raise EnvironmentError("Azure storage connection string not found in environment variables.")
-
     # Create a blob client for Azure Blob Storage
-    blob_service_client = create_blob_client_with_connection_string(connection_string)
+    blob_service_client = create_blob_client_with_connection_string(CONN_STRING_AZURE_STORAGE)
 
     # Define the container and path for the blob storage
-    bronze_container_name = scrapper_config['bronze_container_name']
-    folder_name = scrapper_config['folder_name']
+    bronze_container_name = CONFIG['bronze_container_name']
+    folder_name = CONFIG['folder_name']
     blob_name = create_blob_name(datetime_now)
     path = f"{folder_name}/{blob_name}.parquet"
 

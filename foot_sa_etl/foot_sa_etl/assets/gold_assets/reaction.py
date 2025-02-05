@@ -2,10 +2,8 @@
 import os
 import re
 import sys
-import json
 
 # Third-party library imports
-from dotenv import load_dotenv
 import polars as pl
 
 # Dagster imports
@@ -16,25 +14,20 @@ from dagster import (
 )
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
+
+# Config parameters
+from utils.config import CONFIG, CONN_STRING_AZURE_STORAGE
 
 # Local project utility imports
 from utils.azure_blob_utils import (
-    create_blob_client_with_connection_string, 
-    read_all_parquets_from_container, 
+    create_blob_client_with_connection_string,
+    read_all_parquets_from_container,
     write_blob_to_container
 )
-from utils.common_helpers import generate_hash
-
 # load assets scrappe_epl_news
 # in order to be used as dependency
-from assets.silver_assets.process_raw_epl_news import process_raw_epl_news
-
-
-load_dotenv()
-
-# Get path of the config file
-scrapper_config_path = os.path.join(sys.path[-1], 'scrapper_config.json')
+from foot_sa_etl.assets.silver_assets.process_raw_epl_news import process_raw_epl_news
 
 
 def process_team_table(df):
@@ -223,29 +216,21 @@ def create_reaction_table(df):
         compute_kind="polars"
 )
 def reaction(context: AssetExecutionContext) -> MaterializeResult:
-    # Load the JSON file
-    with open(scrapper_config_path, 'r') as file:
-        scrapper_config = json.load(file)
-
-    # Load environment variables
-    connection_string = os.environ.get("CONN_STRING_AZURE_STORAGE")
-    if connection_string is None:
-        raise EnvironmentError("Azure storage connection string not found in environment variables.")
-
+    
     # Create a blob client for Azure Blob Storage
-    blob_service_client = create_blob_client_with_connection_string(connection_string)
+    blob_service_client = create_blob_client_with_connection_string(CONN_STRING_AZURE_STORAGE)
     # List all blobs in the container
 
-    silver_container_name = scrapper_config['silver_container_name']
-    folder_name = scrapper_config['folder_name']
+    silver_container_name = CONFIG['silver_container_name']
+    folder_name = CONFIG['folder_name']
 
     df = read_all_parquets_from_container(silver_container_name, folder_name, blob_service_client)
 
     df_processed = create_reaction_table(df)
 
     # Define the container and path for the blob storage
-    gold_container_name = scrapper_config['gold_container_name']
-    folder_name = scrapper_config['folder_name']
+    gold_container_name = CONFIG['gold_container_name']
+    folder_name = CONFIG['folder_name']
     path = f"{folder_name}/reaction.parquet"
 
     write_blob_to_container(df_processed, gold_container_name, path, blob_service_client)

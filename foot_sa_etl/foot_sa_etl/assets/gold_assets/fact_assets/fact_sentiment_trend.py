@@ -1,10 +1,8 @@
 # Standard library imports
 import os
 import sys
-import json
 
 # Third-party library imports
-from dotenv import load_dotenv
 import polars as pl
 
 # Dagster imports
@@ -15,7 +13,10 @@ from dagster import (
 )
 
 # Add project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../..')))
+
+# Config parameters
+from utils.config import CONFIG, CONN_STRING_AZURE_STORAGE
 
 # Local project utility imports
 from utils.azure_blob_utils import (
@@ -26,14 +27,9 @@ from utils.azure_blob_utils import (
 
 # load assets reaction and dim_sentiment
 # in order to be used as dependency
-from assets.gold_assets.fact_assets.fact_reaction import fact_reaction
-from assets.gold_assets.fact_assets.fact_title import fact_title
+from foot_sa_etl.assets.gold_assets.fact_assets.fact_reaction import fact_reaction
+from foot_sa_etl.assets.gold_assets.fact_assets.fact_title import fact_title
 
-
-load_dotenv()
-
-# Get path of the config file
-scrapper_config_path = os.path.join(sys.path[-1], 'scrapper_config.json')
 
 def create_sentiment_trend_table(
         df_fact_reaction: pl.DataFrame,
@@ -99,21 +95,13 @@ def create_sentiment_trend_table(
     compute_kind="polars"
 )
 def fact_sentiment_trend(context: AssetExecutionContext) -> MaterializeResult:
-    # Load the JSON file
-    with open(scrapper_config_path, 'r') as file:
-        scrapper_config = json.load(file)
-
-    # Load environment variables
-    connection_string = os.environ.get("CONN_STRING_AZURE_STORAGE")
-    if connection_string is None:
-        raise EnvironmentError("Azure storage connection string not found in environment variables.")
-
+    
     # Create a blob client for Azure Blob Storage
-    blob_service_client = create_blob_client_with_connection_string(connection_string)
+    blob_service_client = create_blob_client_with_connection_string(CONN_STRING_AZURE_STORAGE)
     # List all blobs in the container
     
-    gold_container_name = scrapper_config['gold_container_name']
-    folder_name = scrapper_config['folder_name']
+    gold_container_name = CONFIG['gold_container_name']
+    folder_name = CONFIG['folder_name']
 
     # PROCESSING
     df_fact_reaction = read_blob_from_container(gold_container_name, f"{folder_name}/fact_reaction.parquet", blob_service_client)
@@ -124,7 +112,7 @@ def fact_sentiment_trend(context: AssetExecutionContext) -> MaterializeResult:
     df_fact_sentiment_trend = create_sentiment_trend_table(df_fact_reaction, df_fact_title, df_sentiment, df_date)
 
     # Define the container and path for the blob storage
-    folder_name = scrapper_config['folder_name']
+    folder_name = CONFIG['folder_name']
     path = f"{folder_name}/df_fact_sentiment_trend.parquet"
 
     write_blob_to_container(df_fact_sentiment_trend, gold_container_name, path, blob_service_client)

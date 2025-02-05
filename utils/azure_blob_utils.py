@@ -1,8 +1,13 @@
+import sys
+import os
 import re
 from typing import Union, List
 from io import BytesIO
-from azure.storage.blob import BlobServiceClient
 import polars as pl
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from azure.storage.blob import BlobServiceClient
 
 
 def create_blob_client_with_connection_string(connection_string: str) -> BlobServiceClient:
@@ -65,28 +70,28 @@ def read_all_parquets_from_container(container_name: str, folder_name: str, blob
     """
     container_client = blob_service_client.get_container_client(container_name)
     dataframes = []
-    
+
     try:
         # List all blobs in the container
         blob_list = container_client.list_blobs()
-        
+
         # Iterate over the blobs and read Parquet files
         for blob in blob_list:
             if blob.name.endswith('.parquet') and blob.name.startswith(folder_name):  # Process only parquet files
                 blob_client = container_client.get_blob_client(blob.name)
                 download_stream = blob_client.download_blob()
                 blob_data = download_stream.readall()
-                
+
                 # Read the blob data into a Polars DataFrame
                 df = pl.read_parquet(BytesIO(blob_data))
                 dataframes.append(df)
                 print(f"Successfully read parquet file from {container_name}/{blob.name}")
-        
+
         if dataframes:
             return pl.concat(dataframes, rechunk=True)
         else:
             return None
-    
+
     except Exception as e:
         print(f"Error reading Parquet files from container {container_name}: {e}")
         return None
