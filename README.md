@@ -30,8 +30,10 @@ The **Soccer Fan Sentiment Analysis Dashboard** is designed to analyze the senti
 
 ## TO DO :
 - scrapper_config.json should be at the root of the project **only**
-- In table articles, delete 'no title found line'
-- utils should be loaded as a package ! **important** (and be put at the root of the project)
+- In table articles, delete 'no title found line' **important**
+- delete titles with 'headphone' logo **important**
+- sentiment are only 0 or 1 not 2 -> to fixe **important**
+- utils should be loaded as a package ! (and be put at the root of the project)
 - ".env" should be at the root of the project
 - one time a week -> purge raw -> create new job
 - Start Taipy tutorial
