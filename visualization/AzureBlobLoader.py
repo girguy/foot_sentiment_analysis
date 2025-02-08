@@ -23,11 +23,25 @@ class AzureBlobLoader:
         folder_name = self.config['folder_name']
 
         return {
-            "df_date": read_blob_from_container(gold_container_name, f"{folder_name}/dim_date.parquet", self.blob_service_client),
-            "df_article": read_blob_from_container(gold_container_name, f"{folder_name}/article.parquet", self.blob_service_client),
-            "df_team": read_blob_from_container(gold_container_name, f"{folder_name}/dim_team.parquet", self.blob_service_client),
-            "df_reaction": read_blob_from_container(gold_container_name, f"{folder_name}/reaction.parquet", self.blob_service_client),
-            "df_sentiment": read_blob_from_container(gold_container_name, f"{folder_name}/dim_sentiment.parquet", self.blob_service_client),
-            "df_fact_reaction": read_blob_from_container(gold_container_name, f"{folder_name}/fact_reaction.parquet", self.blob_service_client),
-            "df_fact_title": read_blob_from_container(gold_container_name, f"{folder_name}/fact_title.parquet", self.blob_service_client),
+            "df_date": read_blob_from_container(
+                gold_container_name, f"{folder_name}/dim_date.parquet", self.blob_service_client, True
+                ),
+            "df_article": read_blob_from_container(
+                gold_container_name, f"{folder_name}/article.parquet", self.blob_service_client, True
+                ),
+            "df_team": read_blob_from_container(
+                gold_container_name, f"{folder_name}/dim_team.parquet", self.blob_service_client, True
+                ),
+            "df_reaction": read_blob_from_container(
+                gold_container_name, f"{folder_name}/reaction.parquet", self.blob_service_client, True
+                ),
+            "df_sentiment": read_blob_from_container(
+                gold_container_name, f"{folder_name}/dim_sentiment.parquet", self.blob_service_client, True
+                ),
+            "df_fact_reaction": read_blob_from_container(
+                gold_container_name, f"{folder_name}/fact_reaction.parquet", self.blob_service_client, True
+                ),
+            "df_fact_title": read_blob_from_container(
+                gold_container_name, f"{folder_name}/fact_title.parquet", self.blob_service_client, True
+                ),
         }

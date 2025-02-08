@@ -1,12 +1,13 @@
 import sys
 import os
-import polars as pl
+import pandas as pd
 from taipy.gui import Gui, Icon, navigate
 import taipy.gui.builder as tgb
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from AzureBlobLoader import AzureBlobLoader
+from DataTransformer import DataTransformer
 from utils.config import CONFIG, CONN_STRING_AZURE_STORAGE
 
 
@@ -25,18 +26,31 @@ def menu_option_selected(state, action, info):
     navigate(state, to=page)
 
 
+dataframes = load_data()
+
+if dataframes:
+    transformer = DataTransformer(dataframes)
+
+    df_count = transformer.count_article_reaction()
+    df_subjectivity = transformer.compute_subjectivity_per_team()
+    df_sentiment_analysis = transformer.compute_sentiment_analysis()
+    df_overall_sentiment = transformer.compute_overall_sentiment()
+    df_cumulative_sentiment = transformer.compute_cumulative_sentiment()
+
+
 with tgb.Page() as general_page:
     with tgb.part(class_name="container"):
         tgb.text("# General", mode="md")
         with tgb.part(class_name="card"):
             with tgb.layout(columns="1 1 1"):
                 with tgb.part():
-                    tgb.text("", mode="md")
-                with tgb.part():
+                    #tgb.chart("{df_count}", type="bar", x="team_name", y__1="total_count", orientation='h')
+                    #tgb.table(data="{df_count_pd}")
                     tgb.text("Filter Product **Category**", mode="md")
                 with tgb.part():
                     tgb.text("Filter Product **Category**", mode="md")
-        
+                with tgb.part():
+                    tgb.text("Filter Product **Category**", mode="md")
 
 with tgb.Page() as team_page:
     tgb.text("# Team", mode="md")
@@ -58,7 +72,6 @@ with tgb.Page() as root_page:
 pages = {"/": root_page, "General": general_page, "Team": team_page, "Compare": compare_page}
 
 if __name__ == "__main__":
-    dataframes = load_data()
 
     Gui(pages=pages).run(
         title="EPL News",

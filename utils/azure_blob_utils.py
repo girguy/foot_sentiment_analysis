@@ -39,7 +39,7 @@ def write_blob_to_container(df: pl.DataFrame, container_name: str, path_to_blob:
         print(f"Error uploading blob to {container_name}/{path_to_blob}: {e}")
 
 
-def read_blob_from_container(container_name: str, path_to_blob: str, blob_service_client: BlobServiceClient) -> Union[pl.DataFrame, None]:
+def read_blob_from_container(container_name: str, path_to_blob: str, blob_service_client: BlobServiceClient, pandas=False) -> Union[pl.DataFrame, None]:
     """
     Reads a Parquet file from an Azure Blob Storage container and returns it as a Polars DataFrame.
 
@@ -52,7 +52,11 @@ def read_blob_from_container(container_name: str, path_to_blob: str, blob_servic
     try:
         download_stream = blob_client.download_blob()
         blob_data = download_stream.readall()
-        df = pl.read_parquet(BytesIO(blob_data))
+        if pandas:
+            df = pl.read_parquet(BytesIO(blob_data)).to_pandas()
+        else:
+            df = pl.read_parquet(BytesIO(blob_data))
+
         print(f"Successfully read blob from {container_name}/{path_to_blob}")
         return df
     except Exception as e:
