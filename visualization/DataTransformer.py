@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class DataTransformer:
     """
     Class to handle data transformations related to articles, reactions, and sentiment analysis.
@@ -110,3 +113,17 @@ class DataTransformer:
         df_result = df_result.merge(self.df_team, left_on="fk_team_id", right_on="team_id", how="inner")
         df_result = df_result.rename(columns={"fk_date_id": "date"})
         return df_result[['team_name', 'date', 'sentiment_score', 'cumulative_value']]
+
+    def compute_total_sentiments(self):
+        """Computes the total number of each sentiment across all teams."""
+        df_sentiment_analysis = self.compute_sentiment_analysis()
+        total_sentiments = {
+            'positive': df_sentiment_analysis['positive'].sum(),
+            'neutral': df_sentiment_analysis['neutral'].sum(),
+            'negative': df_sentiment_analysis['negative'].sum()
+        }
+        df_total_sentiments = pd.DataFrame(list(total_sentiments.items()), columns=['sentiment', 'total'])
+        return df_total_sentiments
+
+    def get_teams(self):
+        return self.df_team['team_name'].unique()
